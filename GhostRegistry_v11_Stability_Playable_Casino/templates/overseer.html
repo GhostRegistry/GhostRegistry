@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Overseer Console</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <div>
+        <b>{{ user.username }}</b> | {{ user.role }}
+    </div>
+    <div>
+        {{ credit_name }}: <b>{{ user.credits }}</b> | Rank: <b>{{ user.rank }}</b> | Social Code: <b>{{ user.social_code }}</b>
+    </div>
+</div>
+
+<div class="page compact-page">
+
+    <h1>👻 Overseer Console</h1>
+    <p class="status-line">Operative control, record viewing, audit viewing, and Ghost Shard management.</p>
+
+    {% if message %}
+    <p class="message">{{ message }}</p>
+    {% endif %}
+
+    <div class="stats-grid">
+        <div class="stat-card active-stat" onclick="showTab('recordsTab', this)">
+            <h2>{{ stats.records }}</h2>
+            <p>Active Records</p>
+        </div>
+
+        <div class="stat-card" onclick="showTab('deletedTab', this)">
+            <h2>{{ stats.deleted }}</h2>
+            <p>Deleted Records</p>
+        </div>
+
+        <div class="stat-card" onclick="showTab('operativesTab', this)">
+            <h2>{{ stats.operatives }}</h2>
+            <p>Operatives</p>
+        </div>
+
+        <div class="stat-card" onclick="showTab('logsTab', this)">
+            <h2>{{ stats.logs }}</h2>
+            <p>Audit Logs</p>
+        </div>
+    </div>
+
+    <div class="grid">
+
+        <div class="panel">
+
+            <div id="recordsTab" class="tab-content">
+                <h2>Active Records</h2>
+                <p>Overseers can view active records here.</p>
+
+                <input class="search" id="recordsSearch" placeholder="Search active records..." onkeyup="searchTable('recordsSearch', 'recordsTable')">
+
+                <div class="table-wrap">
+                    <table id="recordsTable">
+                        <tr>
+                            <th>First</th>
+                            <th>Last</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Created By</th>
+                        </tr>
+
+                        {% for r in records %}
+                        <tr>
+                            <td>{{ r.first_name }}</td>
+                            <td>{{ r.last_name }}</td>
+                            <td>{{ r.email }}</td>
+                            <td>{{ r.phone }}</td>
+                            <td>{{ r.created_by }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+            <div id="deletedTab" class="tab-content hidden">
+                <h2>Deleted Records</h2>
+                <p>View only. Overseers cannot permanently delete records.</p>
+
+                <input class="search" id="deletedSearch" placeholder="Search deleted records..." onkeyup="searchTable('deletedSearch', 'deletedTable')">
+
+                <div class="table-wrap">
+                    <table id="deletedTable">
+                        <tr>
+                            <th>First</th>
+                            <th>Last</th>
+                            <th>Email</th>
+                            <th>Deleted By</th>
+                            <th>Deleted At</th>
+                        </tr>
+
+                        {% for r in deleted_records %}
+                        <tr>
+                            <td>{{ r.first_name }}</td>
+                            <td>{{ r.last_name }}</td>
+                            <td>{{ r.email }}</td>
+                            <td>{{ r.deleted_by }}</td>
+                            <td>{{ r.deleted_at }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+            <div id="operativesTab" class="tab-content hidden">
+                <h2>Operative Accounts</h2>
+                <p>Click an operative to reset their password.</p>
+
+                <input class="search" id="operativeSearch" placeholder="Search operatives..." onkeyup="searchTable('operativeSearch', 'operativeTable')">
+
+                <div class="table-wrap">
+                    <table id="operativeTable">
+                        <tr>
+                            <th>Username</th>
+                            <th>Social Code</th>
+                            <th>Ghost Shards</th>
+                            <th>Role</th>
+                            <th>Created</th>
+                        </tr>
+
+                        {% for u in users %}
+                            {% if u.role == "operative" %}
+                            <tr onclick="selectOperative(this)"
+                                data-id="{{ u.id }}"
+                                data-username="{{ u.username }}"
+                                data-social="{{ u.social_code }}">
+                                <td>{{ u.username }}</td>
+                                <td>{{ u.social_code }}</td>
+                                <td>{{ u.credits }}</td>
+                                <td>{{ u.role }}</td>
+                                <td>{{ u.created_at }}</td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+            <div id="logsTab" class="tab-content hidden">
+                <h2>Audit Logs</h2>
+                <p>View only.</p>
+
+                <input class="search" id="logsSearch" placeholder="Search logs..." onkeyup="searchTable('logsSearch', 'logsTable')">
+
+                <div class="table-wrap">
+                    <table id="logsTable">
+                        <tr>
+                            <th>Action</th>
+                            <th>Target</th>
+                            <th>By</th>
+                            <th>Time</th>
+                            <th>Details</th>
+                        </tr>
+
+                        {% for log in logs %}
+                        <tr>
+                            <td>{{ log.action }}</td>
+                            <td>{{ log.target_record }}</td>
+                            <td>{{ log.performed_by }}</td>
+                            <td>{{ log.timestamp }}</td>
+                            <td>{{ log.details }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="panel control-panel">
+            <h2>Operative Password Reset</h2>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="reset_member_password">
+                <input type="hidden" name="target_id" id="targetId">
+
+                <input id="selectedUser" placeholder="Selected Operative" readonly>
+                <input name="new_password" type="password" placeholder="New Password">
+                <button type="submit">Reset Password</button>
+            </form>
+
+
+            <hr>
+
+            <h2>Give Yourself Ghost Shards</h2>
+            <p>Add Ghost Shards directly to your own account.</p>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="self_credits">
+                <input name="self_credit_amount" type="number" placeholder="Amount for yourself">
+                <button type="submit">Give Myself Ghost Shards</button>
+            </form>
+            <hr>
+
+            <h2>Give Ghost Shards</h2>
+            <p>Use username and social code to confirm the account.</p>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="give_credits">
+
+                <input name="credit_username" id="creditUsername" placeholder="Operative Username">
+                <input name="credit_social_code" id="creditSocialCode" placeholder="Operative Social Code">
+                <input name="credit_amount" type="number" placeholder="Amount">
+
+                <button type="submit">Give Ghost Shards</button>
+            </form>
+
+    <a href="/dashboard"><button type="button">Back To Dashboard</button></a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function showTab(tabId, card) {
+    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.add("hidden"));
+    document.getElementById(tabId).classList.remove("hidden");
+
+    document.querySelectorAll(".stat-card").forEach(btn => btn.classList.remove("active-stat"));
+    card.classList.add("active-stat");
+}
+
+function clearSelections() {
+    document.querySelectorAll("tr").forEach(r => r.classList.remove("selected"));
+}
+
+function selectOperative(row) {
+    clearSelections();
+    row.classList.add("selected");
+
+    document.getElementById("targetId").value = row.dataset.id;
+    document.getElementById("selectedUser").value = row.dataset.username;
+
+    document.getElementById("creditUsername").value = row.dataset.username;
+    document.getElementById("creditSocialCode").value = row.dataset.social;
+}
+
+function searchTable(inputId, tableId) {
+    let input = document.getElementById(inputId).value.toLowerCase();
+    let rows = document.querySelectorAll("#" + tableId + " tr");
+
+    for (let i = 1; i < rows.length; i++) {
+        let text = rows[i].innerText.toLowerCase();
+        rows[i].style.display = text.includes(input) ? "" : "none";
+    }
+}
+</script>
+
+<script src="/static/matrix.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><title>{{ title if title else "GhostRegistry" }}</title><link rel="stylesheet" href="/static/style.css"></head><body><div class="top-bar"><div><b>👻 {{ user.username }}</b> | {{ user.role }}</div><div>GS: <b>{{ user.credits }}</b> | Rank: <b>{{ user.rank }}</b> | {{ user.social_code }}</div></div><div class="page compact-page">
+<h1>👻 {{ title }}</h1><p class="status-line">This section is now part of the built-in GhostRegistry master roadmap.</p>
+<div class="panel"><h2>Included In This System</h2>
+{% if section == 'realtime' %}<ul><li>WebSockets roadmap</li><li>Live messages</li><li>Live notifications</li><li>Live credit updates</li><li>Instant kicks and lockdowns</li></ul>
+{% elif section == 'notifications' %}<ul><li>Bell icon</li><li>Unread count</li><li>Mark read</li><li>Message/reward/admin notifications</li><li>Profile icons in messages</li></ul>
+{% elif section == 'missions' %}<ul><li>Daily missions</li><li>Weekly missions</li><li>Achievements</li><li>Badges</li><li>Seasonal achievements</li></ul>
+{% elif section == 'levels' %}<ul><li>XP</li><li>Levels</li><li>Prestige</li><li>Expanded ranks</li><li>Level rewards</li></ul>
+{% elif section == 'hq' %}<ul><li>Personal HQ</li><li>Trophy room</li><li>Collections</li><li>Display cases</li><li>Custom themes</li></ul>
+{% elif section == 'ghostnet' %}<ul><li>Posts</li><li>Likes</li><li>Comments</li><li>Following</li><li>Activity feeds</li></ul>
+{% elif section == 'marketplace' %}<ul><li>Buy/sell items</li><li>Auctions</li><li>Direct trading</li><li>Trade confirmations</li><li>Marketplace messages with avatars</li></ul>
+{% elif section == 'events' %}<ul><li>Event creator</li><li>Double XP weekends</li><li>Casino tournaments</li><li>Season pass</li><li>Community challenges</li></ul>
+{% elif section == 'pets' %}<ul><li>Ghost pets</li><li>Titles</li><li>Avatar frames</li><li>Profile effects</li><li>Seasonal cosmetics</li><li>Cosmetic creator</li></ul>
+{% elif section == 'museum' %}<ul><li>Hall of Fame</li><li>Architect Museum</li><li>Legacy accounts</li><li>Major milestones</li><li>Oldest active accounts</li></ul>
+{% elif section == 'economy' %}<ul><li>Ghost Shards analytics</li><li>Bank</li><li>Interest</li><li>Casino payouts</li><li>Marketplace volume</li></ul>
+{% elif section == 'records' %}<ul><li>Case files</li><li>Investigation graph</li><li>Record timeline</li><li>Relationship heatmap</li><li>Auto-discovered links</li></ul>
+{% elif section == 'ai' %}<ul><li>User Ghost Assistant</li><li>Architect AI</li><li>Suspicious activity reports</li><li>Record search helper</li></ul>
+{% elif section == 'radio' %}<ul><li>Hacker Vibes</li><li>Synthwave</li><li>Dark Cyber</li><li>Ghost Lounge</li></ul>
+{% elif section == 'noodles' %}<ul><li>Noodle terms checkbox</li><li>Noodle facts</li><li>Noodle achievements</li><li>Noodle title</li><li>Noodle emergency event</li></ul>
+{% elif section == 'battlepass' %}<ul><li>Season pass progression</li><li>Daily login calendar</li><li>Month-long reward track</li><li>Cosmetic crates</li><li>Milestone rewards</li></ul>
+{% elif section == 'community' %}<ul><li>Community challenges</li><li>Community voting</li><li>Server-wide goals</li><li>Architect approval queue</li><li>Global reward events</li></ul>
+{% elif section == 'mystery' %}<ul><li>Mystery crates</li><li>Common/Rare/Epic/Legendary/Mythic rarity</li><li>Rare drops</li><li>Seasonal cosmetics</li><li>Ghost pets</li></ul>
+{% elif section == 'lore' %}<ul><li>GhostRegistry lore pages</li><li>Story chapters</li><li>Secret missions</li><li>Hidden titles</li><li>Easter eggs</li></ul>
+{% elif section == 'cinematic' %}<ul><li>Jackpot animations</li><li>Achievement unlock effects</li><li>Rank-up scenes</li><li>Rare-drop reveals</li><li>Promotion cinematics</li></ul>
+{% elif section == 'spectator' %}<ul><li>Poker spectator mode</li><li>Chess spectator mode</li><li>Tournament streams</li><li>Replay viewer</li><li>Hand history</li></ul>
+{% elif section == 'guilds' %}<ul><li>Guild creation</li><li>Faction chat</li><li>Shared goals</li><li>Guild leaderboards</li><li>Guild headquarters</li></ul>
+{% elif section == 'creator' %}<ul><li>Cosmetic creator</li><li>Quest creator</li><li>Arcade event creator</li><li>Wheel creator</li><li>Announcement creator</li></ul>
+{% elif section == 'testing' %}<ul><li>Architect sandbox</li><li>Feature testing realm</li><li>Preview events</li><li>Safe database test mode</li><li>Rollback tools</li></ul>
+{% elif section == 'trust' %}<ul><li>Reputation score</li><li>Trusted user badges</li><li>Community standing</li><li>Moderation history</li><li>Overseer review notes</li></ul>
+{% elif section == 'museumplus' %}<ul><li>Architect Museum</li><li>Legacy account badges</li><li>Trophy room</li><li>Hall of Fame records</li><li>Major site milestones</li></ul>
+{% else %}<ul><li>Mobile support</li><li>Global search</li><li>Favorites</li><li>Keyboard shortcuts</li><li>Custom dashboard layout</li></ul>{% endif %}
+</div>
+<br><a href="/dashboard"><button type="button">Back To Dashboard</button></a></div><script src="/static/matrix.js"></script><script src="/static/live_check.js"></script></body></html>

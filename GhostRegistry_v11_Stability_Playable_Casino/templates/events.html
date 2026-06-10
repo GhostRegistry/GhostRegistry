@@ -1,0 +1,3 @@
+<!DOCTYPE html><html><head><title>Architect Events</title><link rel="stylesheet" href="/static/style.css"></head><body><div class="top-bar"><div><b>{{ user.username }}</b> | {{ user.role }}</div><div>{{ credit_name }}: <b>{{ user.credits }}</b> | Rank: <b>{{ user.rank }}</b> | Social Code: <b>{{ user.social_code }}</b></div></div><div class="page compact-page"><h1>Architect Events</h1>
+<div class="guide-grid">{% for e in events %}<div class="panel guide-card"><h2>{{ e.title }}</h2><p>{{ e.text }}</p></div>{% endfor %}</div>
+<br><a href="/dashboard"><button type="button">Back To Dashboard</button></a></div><script src="/static/matrix.js"></script></body></html>

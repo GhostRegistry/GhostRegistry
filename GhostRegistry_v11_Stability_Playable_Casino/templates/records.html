@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Records Database</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <div>
+        <b>{{ user.username }}</b> | {{ user.role }}
+    </div>
+    <div>
+        {{ credit_name }}: <b>{{ user.credits }}</b> | Rank: <b>{{ user.rank }}</b> | Social Code: <b>{{ user.social_code }}</b>
+    </div>
+</div>
+
+<div class="page compact-page">
+
+    <h1>👻 Records Database</h1>
+    <p class="status-line">Search by first or last name, then unlock the full file for {{ unlock_cost }} {{ credit_name }}.</p>
+
+    {% if message %}
+    <p class="message">{{ message }}</p>
+    {% endif %}
+
+    {% if user.role in ['overseer', 'architect'] %}
+    <div class="grid">
+    {% else %}
+    <div>
+    {% endif %}
+
+        <div class="panel">
+            <h2>Active Records</h2>
+
+            <input class="search" id="searchBox" placeholder="Search records..." onkeyup="searchRecords()">
+
+            {% if user.role in ['overseer', 'architect'] %}
+            <form method="POST">
+                <input type="hidden" name="action" value="delete_record">
+            {% endif %}
+
+            <div class="table-wrap">
+                <table id="recordsTable">
+                    <tr>
+                        {% if user.role in ['overseer', 'architect'] %}
+                        <th>Select</th>
+                        {% endif %}
+                        <th>Status</th>
+                        <th>First</th>
+                        <th>Last</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Phone</th>
+                        <th>Age</th>
+                        <th>Role</th>
+                        <th>Created By</th>
+                    </tr>
+
+                    {% for r in records %}
+                    {% set is_unlocked = user.role in ['overseer', 'architect'] or r.id in unlocked %}
+
+                    <tr onclick="selectRecord(this)"
+                        data-id="{{ r.id }}"
+                        data-first="{{ r.first_name }}"
+                        data-last="{{ r.last_name }}"
+                        data-email="{{ r.email }}"
+                        data-address="{{ r.address }}"
+                        data-phone="{{ r.phone }}"
+                        data-age="{{ r.age }}"
+                        data-role="{{ r.role }}"
+                        data-notes="{{ r.notes }}">
+
+                        {% if user.role in ['overseer', 'architect'] %}
+                        <td>
+                            <input type="checkbox" name="record_ids" value="{{ r.id }}" onclick="event.stopPropagation()">
+                        </td>
+                        {% endif %}
+
+                        <td>
+                            {% if is_unlocked %}
+                            <span class="badge unlocked">Unlocked</span>
+                            {% else %}
+                            <form method="POST">
+                                <input type="hidden" name="action" value="unlock_record">
+                                <input type="hidden" name="record_id" value="{{ r.id }}">
+                                <button type="submit" class="small-btn" onclick="event.stopPropagation()">Unlock</button>
+                            </form>
+                            {% endif %}
+                        </td>
+
+                        {% if is_unlocked %}
+                        <td>{{ r.first_name }}</td>
+                        <td>{{ r.last_name }}</td>
+                        <td>{{ r.email }}</td>
+                        <td>{{ r.address }}</td>
+                        <td>{{ r.phone }}</td>
+                        <td>{{ r.age }}</td>
+                        <td>{{ r.role }}</td>
+                        <td>{{ r.created_by }}</td>
+                        {% else %}
+                        <td>{{ r.first_name }}</td>
+                        <td>{{ r.last_name }}</td>
+                        <td class="blurred">LOCKED</td>
+                        <td class="blurred">LOCKED</td>
+                        <td class="blurred">LOCKED</td>
+                        <td class="blurred">LOCKED</td>
+                        <td class="blurred">LOCKED</td>
+                        <td class="blurred">LOCKED</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            {% if user.role in ['overseer', 'architect'] %}
+                <button type="submit">Delete Selected Records</button>
+            </form>
+            {% endif %}
+        </div>
+
+        {% if user.role in ['overseer', 'architect'] %}
+        <div class="panel control-panel">
+            <h2>Record Controls</h2>
+
+            <form method="POST">
+                <input type="hidden" name="action" id="recordAction" value="create_record">
+                <input type="hidden" name="record_id" id="recordId">
+
+                <input name="first_name" id="firstName" placeholder="First Name">
+                <input name="last_name" id="lastName" placeholder="Last Name">
+                <input name="email" id="email" placeholder="Email">
+                <input name="address" id="address" placeholder="Address">
+                <input name="phone" id="phone" placeholder="Phone">
+                <input name="age" id="age" type="number" placeholder="Age">
+                <input name="role" id="role" placeholder="Website Role">
+                <textarea name="notes" id="notes" placeholder="Notes"></textarea>
+
+                <button type="submit" onclick="setCreateRecord()">Create Record</button>
+                <button type="submit" onclick="setEditRecord()">Save Selected Record</button>
+                <button type="submit" onclick="setDeleteRecord()">Delete Selected Record</button>
+            </form>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <br>
+    <a href="/dashboard"><button type="button">Back To Dashboard</button></a>
+
+</div>
+
+<script>
+function selectRecord(row) {
+    document.querySelectorAll("#recordsTable tr").forEach(r => r.classList.remove("selected"));
+    row.classList.add("selected");
+
+    if (document.getElementById("recordId")) {
+        document.getElementById("recordId").value = row.dataset.id;
+        document.getElementById("firstName").value = row.dataset.first || "";
+        document.getElementById("lastName").value = row.dataset.last || "";
+        document.getElementById("email").value = row.dataset.email || "";
+        document.getElementById("address").value = row.dataset.address || "";
+        document.getElementById("phone").value = row.dataset.phone || "";
+        document.getElementById("age").value = row.dataset.age || "";
+        document.getElementById("role").value = row.dataset.role || "";
+        document.getElementById("notes").value = row.dataset.notes || "";
+    }
+}
+
+function setCreateRecord() {
+    document.getElementById("recordAction").value = "create_record";
+}
+
+function setEditRecord() {
+    document.getElementById("recordAction").value = "edit_record";
+}
+
+function setDeleteRecord() {
+    document.getElementById("recordAction").value = "delete_record";
+}
+
+function searchRecords() {
+    let input = document.getElementById("searchBox").value.toLowerCase();
+    let rows = document.querySelectorAll("#recordsTable tr");
+
+    for (let i = 1; i < rows.length; i++) {
+        let text = rows[i].innerText.toLowerCase();
+        rows[i].style.display = text.includes(input) ? "" : "none";
+    }
+}
+</script>
+
+<script src="/static/matrix.js"></script>
+</body>
+</html>

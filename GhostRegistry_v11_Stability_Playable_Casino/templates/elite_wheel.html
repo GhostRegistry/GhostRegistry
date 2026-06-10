@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head><title>Elite Wheel</title><link rel="stylesheet" href="/static/style.css"></head>
+<body>
+<div class="top-bar"><div><b>{{ user.username }}</b> | {{ user.role }}</div><div>{{ credit_name }}: <b>{{ user.credits }}</b> | Social Code: <b>{{ user.social_code }}</b></div></div>
+<div class="container menu-card wheel-stage elite-stage">
+    <h1>🎡 Elite Ghost Wheel</h1>
+    <p class="status-line">High-tier neon rewards for boosted accounts.</p>
+    {% if message %}<p class="message reward-reveal elite-reveal">{{ message }}</p>{% endif %}
+    <div class="wheel-pointer elite-pointer">▼</div>
+    <div class="wheel-box animated-wheel elite-wheel {% if reward %}landed jackpot-flash{% endif %}" id="eliteWheel">
+        <div class="wheel-slices elite-slices"><span>100</span><span>250</span><span>500</span><span>1000</span><span>2500</span><span>5000</span><span>👑</span><span>💎</span></div>
+        <div class="wheel-inner">👑</div>
+    </div>
+    <div class="ghost-particles elite-particles"><i>👻</i><i>✦</i><i>💠</i><i>👑</i><i>✧</i></div>
+    {% if has_elite %}
+        {% if can_spin %}<form method="POST" class="spin-form" data-wheel="eliteWheel"><button type="submit">Spin Elite Wheel</button></form>{% else %}<button disabled>Already Spun Elite Wheel Today</button>{% endif %}
+    {% else %}<a href="/shop"><button type="button">Buy Elite Wheel Boost</button></a>{% endif %}
+    <a href="/dashboard"><button type="button">Back To Dashboard</button></a>
+</div>
+<script src="/static/matrix.js"></script><script src="/static/wheel_fx.js"></script>
+</body></html>

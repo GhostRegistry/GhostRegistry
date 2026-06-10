@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GhostRegistry Login</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="login-card">
+        <h1>👻 GhostRegistry</h1>
+        <p class="status-line">SECURE ACCESS TERMINAL</p>
+
+        {% if error %}
+        <p class="message">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+            <input name="username" placeholder="Username" required>
+            <input name="password" type="password" placeholder="Password" required>
+            <label class="noodle-check"><input type="checkbox" name="noodle_terms" required> I agree to the Official GhostRegistry Noodle Terms & Conditions</label>
+            <button type="button" onclick="document.getElementById('noodleModal').classList.add('show')">Read Noodle Terms</button>
+            <button type="submit">Enter System</button>
+        </form>
+    </div>
+</div>
+
+<div id="noodleModal" class="modal">
+  <div class="modal-card">
+    <h2>🍜 Official Noodle Terms & Conditions</h2>
+    <p>By accessing GhostRegistry, you acknowledge that noodles should be cooked with care, patience, and at least some water. You agree not to launch noodles into orbit, interrogate them under neon lighting, or blame GhostRegistry if your noodles become suspiciously sticky. Any noodle escaping the pot must be retrieved with reasonable effort, unless it has clearly begun a new life elsewhere.</p>
+    <p>Users accept that overcooked, undercooked, sideways, upside-down, or emotionally confused noodles are not the responsibility of the GhostRegistry noodle department. Stirring is recommended, seasoning is encouraged, and arguing with noodles for longer than three minutes is considered poor operational conduct.</p>
+    <p>If a noodle displays signs of self-awareness, whispers secrets, or attempts to form a tiny government, please report it to a qualified noodle specialist immediately. By continuing, you confirm that soup is optional, cravings are expected, and the correct way to eat noodles will remain unresolved forever.</p>
+    <button onclick="document.getElementById('noodleModal').classList.remove('show')">Accept Noodle Wisdom</button>
+  </div>
+</div>
+
+<script src="/static/matrix.js"></script>
+</body>
+</html>

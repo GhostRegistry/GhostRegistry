@@ -1,0 +1,5 @@
+flask
+supabase
+bcrypt
+python-dotenv
+gunicorn

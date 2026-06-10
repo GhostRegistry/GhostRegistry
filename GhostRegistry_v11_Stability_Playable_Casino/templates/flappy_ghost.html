@@ -1,0 +1,9 @@
+<!DOCTYPE html><html><head><title>{{ title if title else "GhostRegistry" }}</title><link rel="stylesheet" href="/static/style.css"></head><body><div class="top-bar"><div><b>👻 {{ user.username }}</b> | {{ user.role }}</div><div>GS: <b>{{ user.credits }}</b> | Rank: <b>{{ user.rank }}</b> | {{ user.social_code }}</div></div><div class="page compact-page">
+<h1>🐦 Flappy Ghost</h1><p class="status-line">No Ghost Shards. Just for fun.</p><canvas id="flappy" width="360" height="480" class="game-canvas"></canvas><p id="scoreLine">Score: 0</p><button onclick="restartFlappy()">Restart</button>
+<script>
+const c=document.getElementById('flappy'),ctx=c.getContext('2d');let y=220,v=0,score=0,pipes=[],alive=true,tick=0;
+function restartFlappy(){y=220;v=0;score=0;pipes=[];alive=true;tick=0;}
+document.addEventListener('keydown',e=>{if(e.code==='Space')v=-7});c.addEventListener('click',()=>v=-7);
+function loop(){ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle='rgba(0,20,40,.95)';ctx.fillRect(0,0,c.width,c.height);tick++;v+=.35;y+=v;if(tick%95===0){let gap=120,top=40+Math.random()*220;pipes.push({x:360,top:top,bottom:top+gap,passed:false});}ctx.fillStyle='#00eaff';for(const p of pipes){p.x-=2.4;ctx.fillRect(p.x,0,45,p.top);ctx.fillRect(p.x,p.bottom,45,480-p.bottom);if(!p.passed&&p.x<70){score++;p.passed=true;}if(70<p.x+45&&100>p.x&&(y< p.top || y+28>p.bottom))alive=false;}ctx.font='32px serif';ctx.fillText('👻',70,y+24);if(y<0||y>452)alive=false;document.getElementById('scoreLine').textContent='Score: '+score;if(!alive){ctx.fillStyle='white';ctx.font='28px Arial';ctx.fillText('Game Over',110,230);}requestAnimationFrame(loop);}loop();
+</script>
+<br><a href="/dashboard"><button type="button">Back To Dashboard</button></a></div><script src="/static/matrix.js"></script><script src="/static/live_check.js"></script></body></html>

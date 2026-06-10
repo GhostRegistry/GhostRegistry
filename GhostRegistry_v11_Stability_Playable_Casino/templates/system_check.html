@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>GhostRegistry System Check</title><link rel="stylesheet" href="/static/style.css"></head>
+<body>
+<div class="top-bar"><div><b>👻 {{ user.username }}</b> | {{ user.role }}</div><div>{{ credit_name }}: <b>{{ user.credits }}</b> | Social Code: <b>{{ user.social_code }}</b></div></div>
+<div class="page compact-page">
+<h1>System Check</h1>
+<p class="status-line">Architect-only setup checker for Render and Supabase.</p>
+<div class="guide-grid">
+<div class="panel"><h2>Required Tables</h2><div class="table-wrap"><table><tr><th>Table</th><th>Status</th><th>Details</th></tr>{% for c in checks %}<tr><td>{{ c.name }}</td><td>{{ c.status }}</td><td>{{ c.details }}</td></tr>{% endfor %}</table></div></div>
+<div class="panel"><h2>Render Environment</h2><div class="table-wrap"><table><tr><th>Setting</th><th>Status</th><th>Details</th></tr>{% for c in env_checks %}<tr><td>{{ c.name }}</td><td>{{ c.status }}</td><td>{{ c.details }}</td></tr>{% endfor %}</table></div></div>
+</div>
+<div class="panel"><h2>Upgrade Columns</h2><div class="table-wrap"><table><tr><th>Column</th><th>Status</th><th>Details</th></tr>{% for c in column_checks %}<tr><td>{{ c.name }}</td><td>{{ c.status }}</td><td>{{ c.details }}</td></tr>{% endfor %}</table></div></div>
+<br><a href="/dashboard"><button type="button">Back To Dashboard</button></a>
+</div>
+<script src="/static/matrix.js"></script>
+</body></html>

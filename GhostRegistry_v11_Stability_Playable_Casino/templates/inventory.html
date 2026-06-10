@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inventory</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="top-bar">
+    <div><b>{{ user.username }}</b> | {{ user.role }}</div>
+    <div>{{ credit_name }}: <b>{{ user.credits }}</b> | Social Code: <b>{{ user.social_code }}</b></div>
+</div>
+
+<div class="page compact-page">
+    <h1>🎒 Ghost Inventory</h1>
+    <p class="status-line">Equip cosmetics and view active upgrades.</p>
+
+    {% if message %}<p class="message">{{ message }}</p>{% endif %}
+
+    <div class="grid">
+        <div class="panel">
+            <h2>Owned Items</h2>
+            <div class="table-wrap">
+                <table>
+                    <tr><th>Item</th><th>Quantity</th></tr>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ item.item_name }}</td>
+                        <td>{{ item.quantity }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <div class="panel control-panel">
+            <h2>Profile Effect</h2>
+            <p>Current effect: <b>{{ user.profile_effect or "None" }}</b></p>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="equip_effect">
+                <select name="effect">
+                    {% for effect in owned_effects %}
+                    <option value="{{ effect }}">{{ effect }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" {% if not owned_effects %}disabled{% endif %}>✨ Equip Selected Effect</button>
+            </form>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="unequip_effect">
+                <button type="submit">Remove Effect</button>
+            </form>
+
+            <hr>
+            <a href="/shop"><button type="button">Back To Shop</button></a>
+            <a href="/dashboard"><button type="button">Back To Dashboard</button></a>
+        </div>
+    </div>
+</div>
+<script src="/static/matrix.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daily Ghost Shard Wheel</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="top-bar"><div><b>{{ user.username }}</b> | {{ user.role }}</div><div>{{ credit_name }}: <b>{{ user.credits }}</b> | Rank: <b>{{ user.rank }}</b> | Social Code: <b>{{ user.social_code }}</b></div></div>
+<div class="container menu-card wheel-stage">
+    <h1>Daily Ghost Shard Wheel</h1>
+    <p class="status-line">Spin once per day for 10-200 {{ credit_name }}</p>
+    {% if message %}<p class="message reward-reveal">{{ message }}</p>{% endif %}
+    <div class="wheel-pointer">▼</div>
+    <div class="wheel-box animated-wheel {% if reward %}landed{% endif %}" id="dailyWheel">
+        <div class="wheel-slices"><span>10</span><span>25</span><span>50</span><span>75</span><span>100</span><span>125</span><span>150</span><span>200</span></div>
+        <div class="wheel-inner">👻</div>
+    </div>
+    <div class="ghost-particles"><i>👻</i><i>✦</i><i>💠</i><i>👻</i><i>✧</i></div>
+    {% if can_spin %}
+    <form method="POST" class="spin-form" data-wheel="dailyWheel"><button type="submit">Spin The Wheel</button></form>
+    {% else %}
+    <button disabled>Already Spun Today</button>
+    {% endif %}
+    <a href="/dashboard"><button type="button">Back To Dashboard</button></a>
+</div>
+<script src="/static/matrix.js"></script>
+<script src="/static/wheel_fx.js"></script>
+</body>
+</html>

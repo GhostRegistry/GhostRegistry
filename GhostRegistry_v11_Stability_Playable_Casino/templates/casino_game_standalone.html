@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{ title }}</title>
+<link rel="stylesheet" href="/static/style.css">
+<style>
+.casino-shell{max-width:1120px;margin:24px auto;padding:20px}.casino-header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;border:1px solid #00eaff;border-radius:18px;padding:16px;background:rgba(0,16,28,.9);box-shadow:0 0 26px rgba(0,234,255,.3)}
+.casino-table{margin-top:16px;border:1px solid rgba(0,255,255,.42);border-radius:22px;min-height:390px;padding:18px;background:radial-gradient(circle at center,rgba(0,86,100,.72),rgba(0,0,0,.88));box-shadow:inset 0 0 42px rgba(0,255,255,.13)}
+.casino-controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:14px 0}.casino-controls input,.casino-controls select{max-width:140px}.status-box{font-size:18px;text-align:center;border:1px solid rgba(0,255,255,.38);border-radius:14px;padding:12px;background:rgba(0,0,0,.56);min-height:54px}.cards{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0}.playing-card{width:66px;height:92px;background:#f4fbff;color:#001521;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:23px;box-shadow:0 0 12px rgba(0,0,0,.8);user-select:none}.playing-card.red{color:#c4002a}.playing-card.back{background:linear-gradient(135deg,#001b2a,#00eaff);color:#001}.playing-card.hold{outline:4px solid #00ffee;box-shadow:0 0 24px #00ffee}.seat{border:1px solid rgba(0,255,255,.26);border-radius:14px;padding:10px;margin:9px;background:rgba(0,0,0,.38)}.seat h2{font-size:20px}.reels{display:flex;gap:15px;justify-content:center;margin:20px}.reel{width:98px;height:98px;border:2px solid #00ffee;border-radius:15px;font-size:46px;display:flex;align-items:center;justify-content:center;background:#001722}.winflash{animation:winflash .55s alternate 7}@keyframes winflash{from{box-shadow:0 0 8px #00ffee}to{box-shadow:0 0 34px white;transform:scale(1.06)}}.roulette-wheel{width:230px;height:230px;border-radius:50%;margin:16px auto;border:12px solid #00ffee;display:flex;align-items:center;justify-content:center;font-size:40px;background:conic-gradient(#b40028 0 10deg,#050505 10deg 20deg,#b40028 20deg 30deg,#050505 30deg 40deg,#00a060 40deg 50deg,#050505 50deg 60deg,#b40028 60deg 70deg,#050505 70deg 80deg,#b40028 80deg 90deg,#050505 90deg 100deg,#b40028 100deg 110deg,#050505 110deg 120deg,#b40028 120deg 130deg,#050505 130deg 140deg,#b40028 140deg 150deg,#050505 150deg 160deg,#b40028 160deg 170deg,#050505 170deg 180deg,#b40028 180deg 190deg,#050505 190deg 200deg,#b40028 200deg 210deg,#050505 210deg 220deg,#b40028 220deg 230deg,#050505 230deg 240deg,#b40028 240deg 250deg,#050505 250deg 260deg,#b40028 260deg 270deg,#050505 270deg 280deg,#b40028 280deg 290deg,#050505 290deg 300deg,#b40028 300deg 310deg,#050505 310deg 320deg,#b40028 320deg 330deg,#050505 330deg 340deg,#b40028 340deg 350deg,#00a060 350deg 360deg)}.spin-wheel{animation:spinWheel 2s cubic-bezier(.08,.82,.2,1)}@keyframes spinWheel{to{transform:rotate(1840deg)}}.debug-note{font-size:12px;color:#aef;text-align:center;opacity:.85}.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="top-bar"><div><b>👻 {{ user.username }}</b> | {{ user.role }}</div><div>GS: <b id="balance">{{ user.credits }}</b> | Rank: <b>{{ user.rank }}</b> | {{ user.social_code }}</div></div>
+<div class="casino-shell">
+  <div class="casino-header">
+    <div><h1>{{ title }}</h1><p>Playable Ghost Shards-only browser game. No real money or card payments.</p></div>
+    <div><a href="/casino"><button type="button">Casino Lobby</button></a><a href="/dashboard"><button type="button">Dashboard</button></a></div>
+  </div>
+  <div class="casino-controls"><label>Bet <input id="bet" type="number" value="10" min="1"></label><button type="button" onclick="startGame()">Start / Restart</button><button type="button" onclick="showHelp()">How To Play</button></div>
+  <div id="table" class="casino-table"><noscript><h2>JavaScript is off.</h2><p>Turn JavaScript on to play the casino games.</p></noscript></div>
+  <div id="actions" class="casino-controls"></div>
+  <div id="status" class="status-box">Loading game...</div>
+  <p class="debug-note">If buttons do not react, hard refresh the browser with Ctrl + F5 after uploading this ZIP.</p>
+</div>
+<script>
+(function(){
+'use strict';
+const GAME = '{{ game }}';
+const table = document.getElementById('table');
+const actions = document.getElementById('actions');
+const statusBox = document.getElementById('status');
+const balanceBox = document.getElementById('balance');
+let deck=[], player=[], dealer=[], ai1=[], ai2=[], community=[], pot=0, held=[false,false,false,false,false];
+function bet(){ return Math.max(1, parseInt(document.getElementById('bet').value || '1', 10)); }
+function say(text){ statusBox.innerHTML = text; }
+function setActions(html){ actions.innerHTML = html; }
+function makeDeck(){ deck=[]; ['♠','♥','♦','♣'].forEach(s=>['2','3','4','5','6','7','8','9','10','J','Q','K','A'].forEach(r=>deck.push({r:r,s:s}))); for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [deck[i],deck[j]]=[deck[j],deck[i]];} }
+function draw(){ if(!deck.length) makeDeck(); return deck.pop(); }
+function isRed(c){ return c.s==='♥' || c.s==='♦'; }
+function card(c, cls){ return '<div class="playing-card '+(isRed(c)?'red ':'')+(cls||'')+'">'+c.r+c.s+'</div>'; }
+function back(){ return '<div class="playing-card back">👻</div>'; }
+function val(c){ if(['J','Q','K'].includes(c.r)) return 10; if(c.r==='A') return 11; return parseInt(c.r,10); }
+function total(hand){ let t=hand.reduce((a,c)=>a+val(c),0), aces=hand.filter(c=>c.r==='A').length; while(t>21 && aces){ t-=10; aces--; } return t; }
+async function settle(amount, detail){
+  let shown = parseInt(balanceBox.textContent || '0',10);
+  if(Number.isFinite(shown)){ balanceBox.textContent = Math.max(0, shown + amount); }
+  try{
+    const res = await fetch('/casino/settle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({game:GAME,amount:amount,details:detail})});
+    const data = await res.json();
+    if(data.credits !== undefined){ balanceBox.textContent = data.credits; }
+    if(!data.ok && data.error){ say('⚠️ '+data.error+' The game still played locally, but Ghost Shards were not changed.'); }
+  }catch(e){ console.log('Casino settle skipped:', e); }
+}
+function helpText(){
+ const h={blackjack:'Try to get closer to 21 than the dealer. Hit draws, Stand ends, Double Down doubles your bet and draws once.',poker:'Texas Holdem style: you get 2 cards, community cards reveal, then best 5-card hand wins against two computer players.',roulette:'Pick red/black, odd/even, or exact number. Exact number pays much higher.',baccarat:'Bet Player, Banker, or Tie. Closest score to 9 wins.',slots:'Spin three reels. Two matching symbols win. Three matching symbols jackpot.', 'video-poker':'Choose cards to hold, draw replacements, then your final 5-card poker hand is paid.', jackpot:'Pick a vault door. Most lose, some pay, Ghost Door is rare and pays big.'};
+ return h[GAME] || 'Choose a game from the casino lobby.';
+}
+window.showHelp = function(){ say('ℹ️ '+helpText()); };
+window.startGame = function(){ setActions(''); table.innerHTML=''; if(GAME==='blackjack') return blackjack(); if(GAME==='poker') return poker(); if(GAME==='roulette') return roulette(); if(GAME==='baccarat') return baccarat(); if(GAME==='slots') return slots(); if(GAME==='video-poker') return videoPoker(); if(GAME==='jackpot') return jackpot(); table.innerHTML='<h2>Hub room</h2><p>This is a casino hub, not a direct game.</p>'; say('Pick a playable game from Casino Lobby.'); };
+function renderBlackjack(showDealer){ table.innerHTML='<div class="seat"><h2>Dealer '+(showDealer?'('+total(dealer)+')':'')+'</h2><div class="cards">'+(showDealer?dealer.map(c=>card(c)).join(''):card(dealer[0])+back())+'</div></div><div class="seat"><h2>You ('+total(player)+')</h2><div class="cards">'+player.map(c=>card(c)).join('')+'</div></div>'; }
+function blackjack(){ makeDeck(); player=[draw(),draw()]; dealer=[draw(),draw()]; renderBlackjack(false); setActions('<button type="button" onclick="bjHit()">Hit</button><button type="button" onclick="bjStand(false)">Stand</button><button type="button" onclick="bjDouble()">Double Down</button>'); say('Blackjack ready. Your move.'); }
+window.bjHit=function(){ player.push(draw()); renderBlackjack(false); if(total(player)>21){ setActions(''); const b=bet(); say('Bust with '+total(player)+'. Lost '+b+' GS.'); settle(-b,'Blackjack bust'); } };
+window.bjStand=function(doubled){ while(total(dealer)<17) dealer.push(draw()); renderBlackjack(true); setActions(''); let p=total(player), d=total(dealer), b=bet()*(doubled?2:1), amount=0, msg=''; if(p>21){amount=-b; msg='Bust. Lost '+b+' GS.';} else if(d>21 || p>d){amount=b; msg='You '+p+', dealer '+d+'. Won '+b+' GS.';} else if(p===d){msg='Push at '+p+'. No change.';} else {amount=-b; msg='You '+p+', dealer '+d+'. Lost '+b+' GS.';} say(msg); settle(amount,'Blackjack: '+msg); };
+window.bjDouble=function(){ player.push(draw()); window.bjStand(true); };
+function slots(){ table.innerHTML='<div class="reels"><div class="reel">?</div><div class="reel">?</div><div class="reel">?</div></div>'; setActions('<button type="button" onclick="spinSlots()">Spin Reels</button>'); say('Slots ready.'); }
+window.spinSlots=function(){ const symbols=['👻','💎','🔷','🍜','👑','🌀']; const reels=[...document.querySelectorAll('.reel')]; let ticks=0; const timer=setInterval(()=>{ reels.forEach(r=>r.textContent=symbols[Math.floor(Math.random()*symbols.length)]); ticks++; if(ticks>24){ clearInterval(timer); const out=reels.map(()=>symbols[Math.floor(Math.random()*symbols.length)]); reels.forEach((r,i)=>{r.textContent=out[i]; r.classList.remove('winflash');}); const unique=new Set(out).size; const b=bet(); let amount=-b, msg=out.join(' ')+' lost '+b+' GS.'; if(unique===1){ amount=b*8; msg=out.join(' ')+' JACKPOT won '+amount+' GS!'; reels.forEach(r=>r.classList.add('winflash')); } else if(unique===2){ amount=b*2; msg=out.join(' ')+' two match, won '+amount+' GS.'; } say(msg); settle(amount,'Slots: '+msg); } },65); };
+function roulette(){ table.innerHTML='<div id="rouletteWheel" class="roulette-wheel">?</div>'; setActions('<button type="button" onclick="spinRoulette(\'red\')">Red</button><button type="button" onclick="spinRoulette(\'black\')">Black</button><button type="button" onclick="spinRoulette(\'odd\')">Odd</button><button type="button" onclick="spinRoulette(\'even\')">Even</button><input id="numberPick" type="number" min="0" max="36" placeholder="0-36"><button type="button" onclick="spinRoulette(\'number\')">Exact Number</button>'); say('Roulette ready.'); }
+window.spinRoulette=function(choice){ const wheel=document.getElementById('rouletteWheel'); wheel.classList.remove('spin-wheel'); void wheel.offsetWidth; wheel.classList.add('spin-wheel'); setTimeout(()=>{ const n=Math.floor(Math.random()*37); const color=n===0?'green':(n%2?'red':'black'); const b=bet(); let win=false, mult=1; if(choice==='red'||choice==='black') win=color===choice; else if(choice==='odd') win=n>0 && n%2===1; else if(choice==='even') win=n>0 && n%2===0; else { win=n===parseInt(document.getElementById('numberPick').value,10); mult=35; } wheel.textContent=n; const amount=win?b*mult:-b; const msg='Landed '+n+' '+color+'. '+(win?'Won ':'Lost ')+Math.abs(amount)+' GS.'; say(msg); settle(amount,'Roulette: '+msg); },2000); };
+function baccarat(){ table.innerHTML='<h2>Baccarat Table</h2><p>Pick your side before the cards are dealt.</p>'; setActions('<button type="button" onclick="dealBaccarat(\'player\')">Bet Player</button><button type="button" onclick="dealBaccarat(\'banker\')">Bet Banker</button><button type="button" onclick="dealBaccarat(\'tie\')">Bet Tie</button>'); say('Baccarat ready.'); }
+function bScore(h){ return h.reduce((a,c)=>a+Math.min(val(c),10),0)%10; }
+window.dealBaccarat=function(choice){ makeDeck(); const p=[draw(),draw()], bnk=[draw(),draw()]; if(bScore(p)<=5) p.push(draw()); if(bScore(bnk)<=5) bnk.push(draw()); const ps=bScore(p), bs=bScore(bnk), res=ps>bs?'player':(ps<bs?'banker':'tie'); table.innerHTML='<div class="seat"><h2>Player ('+ps+')</h2><div class="cards">'+p.map(c=>card(c)).join('')+'</div></div><div class="seat"><h2>Banker ('+bs+')</h2><div class="cards">'+bnk.map(c=>card(c)).join('')+'</div></div>'; const wager=bet(); const amount=choice===res?wager*(res==='tie'?8:1):-wager; const msg='Result '+res+'. '+(amount>=0?'Won ':'Lost ')+Math.abs(amount)+' GS.'; say(msg); settle(amount,'Baccarat: '+msg); };
+function rVal(c){ return {J:11,Q:12,K:13,A:14}[c.r] || parseInt(c.r,10); }
+function eval5(h){ const rs=h.map(rVal).sort((a,b)=>a-b); const counts={}; rs.forEach(r=>counts[r]=(counts[r]||0)+1); const vals=Object.values(counts).sort((a,b)=>b-a); const flush=h.every(c=>c.s===h[0].s); const unique=[...new Set(rs)]; const straight=(unique.length===5 && unique[4]-unique[0]===4) || rs.join(',')==='2,3,4,5,14'; let score=1,name='High Card'; if(straight&&flush){score=9;name='Straight Flush';} else if(vals[0]===4){score=8;name='Four of a Kind';} else if(vals[0]===3&&vals[1]===2){score=7;name='Full House';} else if(flush){score=6;name='Flush';} else if(straight){score=5;name='Straight';} else if(vals[0]===3){score=4;name='Three of a Kind';} else if(vals[0]===2&&vals[1]===2){score=3;name='Two Pair';} else if(vals[0]===2){score=2;name='Pair';} return {score:score,name:name,high:rs.reduce((a,b)=>a+b,0)}; }
+function bestHand(cards){ let best={score:0,high:0,name:''}; function combo(start,pick){ if(pick.length===5){ const e=eval5(pick); if(e.score>best.score || (e.score===best.score && e.high>best.high)) best=e; return; } for(let i=start;i<cards.length;i++) combo(i+1,pick.concat(cards[i])); } combo(0,[]); return best; }
+function renderPoker(show){ table.innerHTML='<div class="seat"><h2>You</h2><div class="cards">'+player.map(c=>card(c)).join('')+'</div></div><div class="seat"><h2>AI Shade</h2><div class="cards">'+(show?ai1.map(c=>card(c)).join(''):back()+back())+'</div></div><div class="seat"><h2>AI Phantom</h2><div class="cards">'+(show?ai2.map(c=>card(c)).join(''):back()+back())+'</div></div><div class="seat"><h2>Community</h2><div class="cards">'+community.map(c=>card(c)).join('')+'</div><h3>Pot: '+pot+' GS</h3></div>'; }
+function poker(){ makeDeck(); player=[draw(),draw()]; ai1=[draw(),draw()]; ai2=[draw(),draw()]; community=[]; pot=bet()*3; settle(-bet(),'Poker buy-in'); renderPoker(false); setActions('<button type="button" onclick="pokerNext()">Check / Call</button><button type="button" onclick="pokerRaise()">Raise</button><button type="button" onclick="pokerFold()">Fold</button>'); say('Poker started against two computer players.'); }
+window.pokerNext=function(){ if(community.length===0){ community=[draw(),draw(),draw()]; say('Flop dealt.'); } else if(community.length<5){ community.push(draw()); say(community.length===4?'Turn dealt.':'River dealt.'); } else { return window.pokerShowdown(); } renderPoker(false); };
+window.pokerRaise=function(){ const b=bet(); pot+=b*3; settle(-b,'Poker raise'); window.pokerNext(); };
+window.pokerFold=function(){ setActions(''); renderPoker(true); say('You folded. Hand ended.'); };
+window.pokerShowdown=function(){ const hands=[['You',bestHand(player.concat(community))],['AI Shade',bestHand(ai1.concat(community))],['AI Phantom',bestHand(ai2.concat(community))]]; hands.sort((a,b)=>b[1].score-a[1].score || b[1].high-a[1].high); renderPoker(true); setActions(''); const won=hands[0][0]==='You'; const msg='Winner: '+hands[0][0]+' with '+hands[0][1].name+'. '+(won?'You won '+pot+' GS!':'You lost.'); say(msg); if(won) settle(pot,'Poker showdown'); };
+function videoPoker(){ makeDeck(); player=[draw(),draw(),draw(),draw(),draw()]; held=[false,false,false,false,false]; renderVideoPoker(); setActions('<button type="button" onclick="drawVideoPoker()">Draw Cards</button>'); say('Click cards to hold, then draw.'); }
+function renderVideoPoker(){ let html='<h2>Video Poker</h2><div class="cards">'; player.forEach((c,i)=>{ html+='<button type="button" style="background:transparent;border:0;padding:0" onclick="toggleHold('+i+')">'+card(c,held[i]?'hold':'')+'</button>'; }); html+='</div><p>Held cards glow cyan.</p>'; table.innerHTML=html; }
+window.toggleHold=function(i){ held[i]=!held[i]; renderVideoPoker(); };
+window.drawVideoPoker=function(){ player=player.map((c,i)=>held[i]?c:draw()); renderVideoPoker(); setActions(''); const e=eval5(player); const payout={2:1,3:2,4:3,5:4,6:5,7:7,8:20,9:50}[e.score] || -1; const b=bet(); const amount=payout>0?b*payout:-b; const msg=e.name+'. '+(amount>=0?'Won ':'Lost ')+Math.abs(amount)+' GS.'; say(msg); settle(amount,'Video Poker: '+msg); };
+function jackpot(){ table.innerHTML='<h2>💎 Jackpot Vault</h2><p>Pick one vault door.</p>'; setActions('<button type="button" onclick="openVault(1)">Door 1</button><button type="button" onclick="openVault(2)">Door 2</button><button type="button" onclick="openVault(3)">Door 3</button><button type="button" onclick="openVault(4)">Ghost Door</button>'); say('Vault ready.'); }
+window.openVault=function(choice){ const winner=Math.random()>.92?4:Math.floor(Math.random()*3)+1; const b=bet(); const amount=choice===winner?b*(winner===4?25:4):-b; const msg='Door '+winner+' opened. '+(amount>=0?'Won ':'Lost ')+Math.abs(amount)+' GS.'; table.innerHTML='<h2>'+(choice===winner?'💎 WIN':'👻 EMPTY')+'</h2><p>Winning door was '+winner+'.</p>'; say(msg); settle(amount,'Jackpot Vault: '+msg); };
+window.addEventListener('error', function(e){ say('⚠️ Game script error: '+e.message); });
+startGame();
+})();
+</script>
+<script src="/static/matrix.js"></script><script src="/static/live_check.js"></script>
+</body>
+</html>

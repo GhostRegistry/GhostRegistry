@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>How To Use My Account</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <div>
+        <b>{{ user.username }}</b> | {{ user.role }}
+    </div>
+    <div>
+        {{ credit_name }}: <b>{{ user.credits }}</b> | Rank: <b>{{ rank }}</b> | Social Code: <b>{{ user.social_code }}</b>
+    </div>
+</div>
+
+<div class="page compact-page">
+    <h1>👻 How To Use My Account</h1>
+    <p class="status-line">Your role: {{ user.role }} | Your rank: {{ rank }}</p>
+
+    <div class="guide-grid">
+        {% for item in guide_items %}
+        <div class="panel guide-card">
+            <h2>{{ item.title }}</h2>
+            <p>{{ item.text }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="panel">
+        <h2>Fast Menu</h2>
+        <a href="/records"><button type="button">Records Database</button></a>
+        <a href="/shop"><button type="button">Ghost Shard Shop</button></a>
+        <a href="/wheel"><button type="button">Daily Wheel</button></a>
+        <a href="/arcade"><button type="button">Arcade</button></a>
+        <a href="/chat"><button type="button">Chat</button></a>
+        <a href="/account"><button type="button">Account Management</button></a>
+
+        {% if user.role == 'overseer' %}
+        <a href="/overseer"><button type="button">Overseer Console</button></a>
+        {% endif %}
+
+        {% if user.role == 'architect' %}
+        <a href="/architect"><button type="button">Architect Command Center</button></a>
+        {% endif %}
+
+        <a href="/dashboard"><button type="button">Back To Dashboard</button></a>
+    </div>
+</div>
+
+<script src="/static/matrix.js"></script>
+</body>
+</html>

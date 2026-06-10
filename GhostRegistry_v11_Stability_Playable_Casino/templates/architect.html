@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Architect Command Center</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <div>
+        <b>{{ user.username }}</b> | {{ user.role }}
+    </div>
+    <div>
+        {{ credit_name }}: <b>{{ user.credits }}</b> | Rank: <b>{{ user.rank }}</b> | Social Code: <b>{{ user.social_code }}</b>
+    </div>
+</div>
+
+<div class="page compact-page">
+
+    <h1>👻 Architect Command Center</h1>
+    <p class="status-line">Full system command, user control, record recovery, audit control, and Ghost Shard management.</p>
+
+    {% if message %}
+    <p class="message">{{ message }}</p>
+    {% endif %}
+
+    <div class="stats-grid">
+        <div class="stat-card active-stat" onclick="showTab('usersTab', this)">
+            <h2>{{ stats.users }}</h2>
+            <p>Users</p>
+        </div>
+
+        <div class="stat-card" onclick="showTab('recordsTab', this)">
+            <h2>{{ stats.records }}</h2>
+            <p>Active Records</p>
+        </div>
+
+        <div class="stat-card" onclick="showTab('deletedTab', this)">
+            <h2>{{ stats.deleted }}</h2>
+            <p>Deleted Records</p>
+        </div>
+
+        <div class="stat-card" onclick="showTab('logsTab', this)">
+            <h2>{{ stats.logs }}</h2>
+            <p>Audit Logs</p>
+        </div>
+    </div>
+
+    <div class="grid">
+
+        <div class="panel">
+
+            <div id="usersTab" class="tab-content">
+                <h2>User Database</h2>
+
+                <input class="search" id="usersSearch" placeholder="Search users..." onkeyup="searchTable('usersSearch', 'usersTable')">
+
+                <div class="table-wrap">
+                    <table id="usersTable">
+                        <tr>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Social Code</th>
+                            <th>Ghost Shards</th>
+                            <th>Created</th>
+                            <th>Locked</th>
+                        </tr>
+
+                        {% for u in users %}
+                        <tr onclick="selectUser(this)"
+                            data-id="{{ u.id }}"
+                            data-username="{{ u.username }}"
+                            data-role="{{ u.role }}"
+                            data-social="{{ u.social_code }}">
+                            <td>{{ u.username }}</td>
+                            <td>{{ u.role }}</td>
+                            <td>{{ u.social_code }}</td>
+                            <td>{{ u.credits }}</td>
+                            <td>{{ u.created_at }}</td>
+                            <td>{% if u.account_locked %}LOCKED{% else %}Open{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+            <div id="recordsTab" class="tab-content hidden">
+                <h2>Active Records</h2>
+
+                <input class="search" id="recordsSearch" placeholder="Search active records..." onkeyup="searchTable('recordsSearch', 'recordsTable')">
+
+                <div class="table-wrap">
+                    <table id="recordsTable">
+                        <tr>
+                            <th>First</th>
+                            <th>Last</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Created By</th>
+                        </tr>
+
+                        {% for r in records %}
+                        <tr>
+                            <td>{{ r.first_name }}</td>
+                            <td>{{ r.last_name }}</td>
+                            <td>{{ r.email }}</td>
+                            <td>{{ r.phone }}</td>
+                            <td>{{ r.created_by }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+            <div id="deletedTab" class="tab-content hidden">
+                <h2>Deleted Records</h2>
+                <p>Click a deleted record to restore or permanently delete it.</p>
+
+                <input class="search" id="deletedSearch" placeholder="Search deleted records..." onkeyup="searchTable('deletedSearch', 'deletedTable')">
+
+                <div class="table-wrap">
+                    <table id="deletedTable">
+                        <tr>
+                            <th>First</th>
+                            <th>Last</th>
+                            <th>Email</th>
+                            <th>Deleted By</th>
+                            <th>Deleted At</th>
+                        </tr>
+
+                        {% for r in deleted_records %}
+                        <tr onclick="selectDeletedRecord(this)"
+                            data-id="{{ r.id }}"
+                            data-name="{{ r.first_name }} {{ r.last_name }}">
+                            <td>{{ r.first_name }}</td>
+                            <td>{{ r.last_name }}</td>
+                            <td>{{ r.email }}</td>
+                            <td>{{ r.deleted_by }}</td>
+                            <td>{{ r.deleted_at }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+            <div id="logsTab" class="tab-content hidden">
+                <h2>Audit Logs</h2>
+                <p>Select multiple audit logs, then delete them together.</p>
+
+                <input class="search" id="logsSearch" placeholder="Search logs..." onkeyup="searchTable('logsSearch', 'logsTable')">
+
+                <form method="POST">
+                    <input type="hidden" name="action" value="delete_audit_log">
+
+                    <div class="table-wrap">
+                        <table id="logsTable">
+                            <tr>
+                                <th>Select</th>
+                                <th>Action</th>
+                                <th>Target</th>
+                                <th>By</th>
+                                <th>Time</th>
+                                <th>Details</th>
+                            </tr>
+
+                            {% for log in logs %}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="audit_log_ids" value="{{ log.id }}">
+                                </td>
+                                <td>{{ log.action }}</td>
+                                <td>{{ log.target_record }}</td>
+                                <td>{{ log.performed_by }}</td>
+                                <td>{{ log.timestamp }}</td>
+                                <td>{{ log.details }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+
+                    <button type="submit">Delete Selected Audit Logs</button>
+                </form>
+            </div>
+
+        </div>
+
+        <div class="panel control-panel">
+            <h2>User Control Console</h2>
+
+            <form method="POST">
+                <input type="hidden" name="action" id="userAction" value="create_user">
+                <input type="hidden" name="target_id" id="targetId">
+
+                <input name="username" id="username" placeholder="New Username">
+                <input name="password" id="password" type="password" placeholder="New Password">
+
+                <select name="role" id="roleSelect">
+                    <option value="operative">Operative</option>
+                    <option value="overseer">Overseer</option>
+                    <option value="architect">Architect</option>
+                </select>
+
+                <input name="new_username" id="newUsername" placeholder="Selected User / New Username">
+                <input name="new_password" id="newPassword" type="password" placeholder="New Password For Selected User">
+
+                <select name="new_role" id="newRole">
+                    <option value="">Keep Same Role</option>
+                    <option value="operative">Operative</option>
+                    <option value="overseer">Overseer</option>
+                    <option value="architect">Architect</option>
+                </select>
+
+                <button type="submit" onclick="setCreateUser()">Create User</button>
+                <button type="submit" onclick="setUpdateUser()">Update Selected User</button>
+                <button type="submit" onclick="setDeleteUser()">Delete Selected User</button>
+            </form>
+
+
+            <hr>
+
+            <h2>Give Yourself Ghost Shards</h2>
+            <p>Add Ghost Shards directly to your own account.</p>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="self_credits">
+                <input name="self_credit_amount" type="number" placeholder="Amount for yourself">
+                <button type="submit">Give Myself Ghost Shards</button>
+            </form>
+            <hr>
+
+            <h2>Give Ghost Shards</h2>
+            <p>Use username and social code to confirm the operative account.</p>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="give_credits">
+
+                <input name="credit_username" id="creditUsername" placeholder="Operative Username">
+                <input name="credit_social_code" id="creditSocialCode" placeholder="Operative Social Code">
+                <input name="credit_amount" type="number" placeholder="Amount">
+
+                <button type="submit">Give Ghost Shards</button>
+            </form>
+
+            <hr>
+
+            <h2>Deleted Record Controls</h2>
+
+            <form method="POST">
+                <input type="hidden" name="action" id="deletedRecordAction" value="restore_record">
+                <input type="hidden" name="deleted_record_id" id="deletedRecordId">
+
+                <input id="deletedRecordName" placeholder="Selected Deleted Record" readonly>
+
+                <button type="submit" onclick="setRestoreRecord()">Restore Deleted Record</button>
+                <button type="submit" onclick="setPermanentDeleteRecord()">Permanently Delete Record</button>
+            </form>
+
+
+            <hr>
+
+            <h2>Architect Lockdown</h2>
+            <p>Lock every Overseer and Operative instantly. They will be kicked to login by the live session checker without needing to refresh.</p>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="lock_non_architects">
+                <input name="lock_code" maxlength="4" pattern="[0-9]{4}" placeholder="Create 4 digit lockdown code">
+                <button type="submit">LOCKDOWN Overseers + Operatives</button>
+            </form>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="unlock_non_architects">
+                <input name="unlock_code" maxlength="4" pattern="[0-9]{4}" placeholder="Enter 4 digit unlock code">
+                <button type="submit">Remove Lockdown</button>
+            </form>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="emergency_lockdown">
+                <button type="submit">Force Everyone To Re-Login</button>
+            </form>
+
+            <a href="/security-dashboard"><button type="button">Security Dashboard</button></a>
+    <a href="/dashboard"><button type="button">Back To Dashboard</button></a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function showTab(tabId, card) {
+    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.add("hidden"));
+    document.getElementById(tabId).classList.remove("hidden");
+
+    document.querySelectorAll(".stat-card").forEach(btn => btn.classList.remove("active-stat"));
+    card.classList.add("active-stat");
+}
+
+function clearSelections() {
+    document.querySelectorAll("tr").forEach(r => r.classList.remove("selected"));
+}
+
+function selectUser(row) {
+    clearSelections();
+    row.classList.add("selected");
+
+    document.getElementById("targetId").value = row.dataset.id;
+    document.getElementById("newUsername").value = row.dataset.username;
+    document.getElementById("newRole").value = row.dataset.role;
+
+    document.getElementById("creditUsername").value = row.dataset.username;
+    document.getElementById("creditSocialCode").value = row.dataset.social;
+}
+
+function selectDeletedRecord(row) {
+    clearSelections();
+    row.classList.add("selected");
+
+    document.getElementById("deletedRecordId").value = row.dataset.id;
+    document.getElementById("deletedRecordName").value = row.dataset.name;
+}
+
+function setCreateUser() {
+    document.getElementById("userAction").value = "create_user";
+}
+
+function setUpdateUser() {
+    document.getElementById("userAction").value = "update_user";
+}
+
+function setDeleteUser() {
+    document.getElementById("userAction").value = "delete_user";
+}
+
+function setRestoreRecord() {
+    document.getElementById("deletedRecordAction").value = "restore_record";
+}
+
+function setPermanentDeleteRecord() {
+    document.getElementById("deletedRecordAction").value = "permanent_delete_record";
+}
+
+function searchTable(inputId, tableId) {
+    let input = document.getElementById(inputId).value.toLowerCase();
+    let rows = document.querySelectorAll("#" + tableId + " tr");
+
+    for (let i = 1; i < rows.length; i++) {
+        let text = rows[i].innerText.toLowerCase();
+        rows[i].style.display = text.includes(input) ? "" : "none";
+    }
+}
+</script>
+
+<script src="/static/matrix.js"></script>
+</body>
+</html>

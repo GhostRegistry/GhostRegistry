@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{{ title }}</title>
+<link rel="stylesheet" href="/static/style.css">
+<style>
+.casino-table{border:1px solid #00d9ff;border-radius:18px;padding:18px;background:rgba(0,15,28,.86);box-shadow:0 0 25px rgba(0,217,255,.28);max-width:980px;margin:auto}.casino-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin:14px 0}.casino-controls input,.casino-controls select{max-width:160px}.felt{min-height:260px;border:1px solid rgba(0,255,255,.35);border-radius:18px;padding:18px;background:radial-gradient(circle at center,rgba(0,80,95,.8),rgba(0,0,0,.75));margin:12px 0}.cards{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px}.card{width:62px;height:88px;background:#f6f9ff;color:#07131d;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;box-shadow:0 0 12px rgba(0,0,0,.6)}.red{color:#d5123f}.back{background:linear-gradient(135deg,#002a3d,#00d9ff);color:#001}.dealer-row,.player-row{padding:10px;border-radius:12px;margin:8px;background:rgba(0,0,0,.35)}.result-box{min-height:50px;border:1px solid rgba(0,255,255,.35);border-radius:12px;padding:12px;text-align:center;background:rgba(0,0,0,.45);font-size:18px}.roulette-wheel{width:180px;height:180px;border-radius:50%;margin:15px auto;border:10px solid #00ffee;display:flex;align-items:center;justify-content:center;font-size:34px;background:conic-gradient(#b80024 0 10deg,#050505 10deg 20deg,#b80024 20deg 30deg,#050505 30deg 40deg,#00aa66 40deg 50deg,#050505 50deg 60deg,#b80024 60deg 70deg,#050505 70deg 80deg,#b80024 80deg 90deg,#050505 90deg 100deg,#b80024 100deg 110deg,#050505 110deg 120deg,#b80024 120deg 130deg,#050505 130deg 140deg,#b80024 140deg 150deg,#050505 150deg 160deg,#b80024 160deg 170deg,#050505 170deg 180deg,#b80024 180deg 190deg,#050505 190deg 200deg,#b80024 200deg 210deg,#050505 210deg 220deg,#b80024 220deg 230deg,#050505 230deg 240deg,#b80024 240deg 250deg,#050505 250deg 260deg,#b80024 260deg 270deg,#050505 270deg 280deg,#b80024 280deg 290deg,#050505 290deg 300deg,#b80024 300deg 310deg,#050505 310deg 320deg,#b80024 320deg 330deg,#050505 330deg 340deg,#b80024 340deg 350deg,#050505 350deg 360deg)}.spin{animation:spin 2.4s cubic-bezier(.18,.84,.28,1)}@keyframes spin{from{transform:rotate(0)}to{transform:rotate(1440deg)}}.slot-reels{display:flex;gap:12px;justify-content:center;margin:25px}.reel{width:90px;height:90px;border-radius:14px;border:2px solid #00ffee;background:#00131f;display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:0 0 18px rgba(0,255,255,.4)}.flash-win{animation:flashWin .8s alternate 4}@keyframes flashWin{from{box-shadow:0 0 8px #00ffee}to{box-shadow:0 0 35px #fff;color:#fff}}.hold{outline:4px solid #ffee00}.poker-seat{border:1px solid rgba(0,255,255,.25);border-radius:12px;padding:10px;margin:8px;background:rgba(0,0,0,.32)}
+</style>
+</head>
+<body>
+<div class="top-bar"><div><b>👻 {{ user.username }}</b> | {{ user.role }}</div><div>GS: <b id="balance">{{ user.credits }}</b> | Rank: <b>{{ user.rank }}</b> | {{ user.social_code }}</div></div>
+<div class="page compact-page">
+<h1>{{ title }}</h1><p class="status-line">Playable Ghost Shards game. These are fake in-site credits only.</p>
+<div class="casino-table">
+<div class="casino-controls"><label>Bet <input id="bet" type="number" min="1" value="25"></label><button onclick="startGame()">New Game / Deal</button><a href="/casino"><button type="button">Casino Lobby</button></a><a href="/dashboard"><button type="button">Dashboard</button></a></div>
+<div id="felt" class="felt"></div>
+<div id="actions" class="casino-controls"></div>
+<div id="result" class="result-box">Choose an action to begin.</div>
+</div>
+</div>
+<script>window.CASINO_GAME="{{ game }}"; window.CASINO_TITLE="{{ title }}";</script>
+<script src="/static/casino_games.js"></script><script src="/static/matrix.js"></script><script src="/static/live_check.js"></script></body></html>

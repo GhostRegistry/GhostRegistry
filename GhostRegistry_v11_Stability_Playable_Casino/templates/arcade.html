@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head><title>Ghost Shard Casino Arcade</title><link rel="stylesheet" href="/static/style.css"></head>
+<body>
+<div class="top-bar"><div><b>{{ user.username }}</b> | {{ user.role }}</div><div>{{ credit_name }}: <b>{{ user.credits }}</b> | Rank: <b>{{ user.rank }}</b> | Social Code: <b>{{ user.social_code }}</b></div></div>
+<div class="page compact-page">
+    <h1>Ghost Shard Casino Arcade</h1>
+    <p class="status-line">Fake in-site {{ credit_name }} only. No real money, no card payments.</p>
+    {% if message %}<p class="message reward-reveal">{{ message }}</p>{% endif %}
+    <div class="arcade-grid casino-grid">
+        <div class="panel casino-card"><h2>🎰 Neon Slots</h2><p>Spin three ghost reels. Three of a kind pays 5x. Two of a kind pays 2x.</p><form method="POST"><input type="hidden" name="game" value="slots"><input name="bet" type="number" min="1" placeholder="Bet amount"><button type="submit">Spin Slots</button></form></div>
+        <div class="panel casino-card"><h2>🃏 Blackjack</h2><p>One quick hand against the Ghost Dealer. Closest to 21 wins.</p><form method="POST"><input type="hidden" name="game" value="blackjack"><input name="bet" type="number" min="1" placeholder="Bet amount"><button type="submit">Deal Blackjack</button></form></div>
+        <div class="panel casino-card"><h2>♠️ Ghost Poker</h2><p>Draw a five-card hand. Pairs, flushes, straights, and better pay out.</p><form method="POST"><input type="hidden" name="game" value="poker"><input name="bet" type="number" min="1" placeholder="Bet amount"><button type="submit">Draw Poker Hand</button></form></div>
+        <div class="panel casino-card"><h2>🎡 Phantom Roulette</h2><p>Pick red, black, or ghost green. Green is rare but pays bigger.</p><form method="POST"><input type="hidden" name="game" value="roulette"><input name="bet" type="number" min="1" placeholder="Bet amount"><select name="choice"><option value="red">Red</option><option value="black">Black</option><option value="green">Ghost Green</option></select><button type="submit">Spin Roulette</button></form></div>
+        <div class="panel casino-card"><h2>🎴 Baccarat</h2><p>Bet on Player, Banker, or Tie. Tie is rare and pays 8x.</p><form method="POST"><input type="hidden" name="game" value="baccarat"><input name="bet" type="number" min="1" placeholder="Bet amount"><select name="choice"><option value="player">Player</option><option value="banker">Banker</option><option value="tie">Tie</option></select><button type="submit">Deal Baccarat</button></form></div>
+        <div class="panel casino-card"><h2>💎 Jackpot Vault</h2><p>Pick a vault. Correct vault pays 3x. Rare ghost vault pays 10x.</p><form method="POST"><input type="hidden" name="game" value="jackpot_vault"><input name="bet" type="number" min="1" placeholder="Bet amount"><select name="choice"><option value="1">Vault 1</option><option value="2">Vault 2</option><option value="3">Vault 3</option><option value="ghost">Ghost Vault</option></select><button type="submit">Open Vault</button></form></div>
+    </div>
+    <a href="/dashboard"><button type="button">Back To Dashboard</button></a>
+</div>
+<script src="/static/matrix.js"></script>
+</body></html>

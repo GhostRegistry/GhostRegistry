@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>GhostRegistry - Casino Lobby</title>
+<link rel="stylesheet" href="/static/style.css">
+<style>
+.casino-hero{padding:22px;border:1px solid #00d9ff;border-radius:18px;background:rgba(0,20,35,.78);box-shadow:0 0 22px rgba(0,217,255,.35);margin-bottom:18px;text-align:center}.casino-grid .panel{min-height:150px;text-decoration:none;color:white;position:relative;overflow:hidden}.casino-grid .panel:before{content:"";position:absolute;inset:-60px;background:radial-gradient(circle,rgba(0,255,255,.22),transparent 45%);transform:translateX(-80%);transition:.45s}.casino-grid .panel:hover:before{transform:translateX(40%)}.casino-grid .panel h2{position:relative}.play-badge{display:inline-block;margin-top:8px;padding:6px 10px;border:1px solid #00ffee;border-radius:999px;color:#00ffee;font-size:12px}
+</style>
+</head>
+<body>
+<div class="top-bar"><div><b>👻 {{ user.username }}</b> | {{ user.role }}</div><div>GS: <b>{{ user.credits }}</b> | Rank: <b>{{ user.rank }}</b> | {{ user.social_code }}</div></div>
+<div class="page compact-page">
+<div class="casino-hero"><h1>🎰 Ghost Casino Lobby</h1><p>Real playable in-site casino games using Ghost Shards only. No real money, no card payments.</p><a href="/arcade"><button>Classic Quick Arcade</button></a> <a href="/dashboard"><button type="button">Dashboard</button></a></div>
+<div class="grid-cards casino-grid">
+<a class="panel" href="/casino/blackjack"><h2>🃏 Blackjack Hall</h2><p>Hit, stand, double down, dealer AI, animated cards.</p><span class="play-badge">Playable now</span></a>
+<a class="panel" href="/casino/poker"><h2>♠️ Texas Hold'em Poker</h2><p>Player vs computer opponents with betting rounds and showdown.</p><span class="play-badge">Playable now</span></a>
+<a class="panel" href="/casino/roulette"><h2>🎡 Roulette Floor</h2><p>Bet red/black, odd/even, or exact numbers with spinning wheel.</p><span class="play-badge">Playable now</span></a>
+<a class="panel" href="/casino/baccarat"><h2>🎴 Baccarat Lounge</h2><p>Player, Banker, Tie with card drawing and table rules.</p><span class="play-badge">Playable now</span></a>
+<a class="panel" href="/casino/slots"><h2>🎰 Neon Slots Room</h2><p>Animated reels, bonus symbols, jackpot bursts.</p><span class="play-badge">Playable now</span></a>
+<a class="panel" href="/casino/video-poker"><h2>🂡 Video Poker</h2><p>Deal, hold cards, draw, and score your final hand.</p><span class="play-badge">Playable now</span></a>
+<a class="panel" href="/casino/jackpot"><h2>💎 Jackpot Vault</h2><p>Pick vault doors and hunt rare Ghost jackpots.</p><span class="play-badge">Playable now</span></a>
+<a class="panel" href="/casino/tournaments"><h2>🏆 Tournament Center</h2><p>Event hub for poker, blackjack, chess, and arcade tournaments.</p><span class="play-badge">Hub</span></a>
+<a class="panel" href="/casino/vip"><h2>👑 VIP Lounge</h2><p>VIP ranks, perks, casino stats, and exclusive rooms.</p><span class="play-badge">Hub</span></a>
+</div>
+</div><script src="/static/matrix.js"></script><script src="/static/live_check.js"></script></body></html>

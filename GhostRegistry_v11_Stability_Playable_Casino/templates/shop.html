@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ghost Shard Shop</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="top-bar">
+    <div><b>{{ user.username }}</b> | {{ user.role }}</div>
+    <div>{{ credit_name }}: <b>{{ user.credits }}</b> | Social Code: <b>{{ user.social_code }}</b></div>
+</div>
+
+<div class="page compact-page">
+    <h1>👻👻 Ghost Shard Shop</h1>
+    <p class="status-line">Spend in-site Ghost Shards on real active upgrades. No real money.</p>
+
+    {% if warning %}<p class="message">{{ warning }}</p>{% endif %}
+    {% if message %}<p class="message">{{ message }}</p>{% endif %}
+
+    <div class="arcade-grid">
+
+        <div class="panel">
+            <h2>Random Record Unlock Bundle</h2>
+            <p><b>Cost:</b> 250 {{ credit_name }}</p>
+            <p>Locked files remaining: {{ locked_count }}</p>
+            <p>Unlocks one random locked record forever.</p>
+            <form method="POST">
+                <input type="hidden" name="action" value="random_unlock">
+                <button type="submit" {% if user.credits < 250 or locked_count <= 0 %}disabled{% endif %}>👻 Buy Random Unlock</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h2>Mystery Crate</h2>
+            <p><b>Cost:</b> {{ mystery_crate_cost }} {{ credit_name }}</p>
+            <p>Open for random Ghost Shards, badges, tags, or boost tickets.</p>
+            <form method="POST">
+                <input type="hidden" name="action" value="mystery_crate">
+                <button type="submit" {% if user.credits < mystery_crate_cost %}disabled{% endif %}>🎁 Open Mystery Crate</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h2>Elite Wheel Boost</h2>
+            <p><b>Cost:</b> {{ elite_wheel_cost }} {{ credit_name }}</p>
+            <p>Unlocks the Elite Wheel page with bigger daily rewards.</p>
+            <form method="POST">
+                <input type="hidden" name="action" value="elite_wheel_boost">
+                {% if "Elite Wheel Boost" in owned_items %}
+                <button type="button" disabled>✅ Already Active</button>
+                {% else %}
+                <button type="submit" {% if user.credits < elite_wheel_cost %}disabled{% endif %}>🎡 Buy Elite Wheel Boost</button>
+                {% endif %}
+            </form>
+        </div>
+
+        <div class="panel">
+            <h2>Profile Effects</h2>
+            <p><b>Cost:</b> {{ profile_effect_cost }} {{ credit_name }}</p>
+            <p>Buy a cosmetic effect, then equip it from Inventory.</p>
+            <form method="POST">
+                <input type="hidden" name="action" value="profile_effect">
+                <select name="effect">
+                    {% for effect in profile_effects %}
+                    <option value="{{ effect }}">{{ effect }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" {% if user.credits < profile_effect_cost %}disabled{% endif %}>✨ Buy Profile Effect</button>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h2>Record Scanner</h2>
+            <p><b>Cost:</b> {{ record_scanner_cost }} {{ credit_name }}</p>
+            <p>Reveals age and website role on locked records before full unlock.</p>
+            <form method="POST">
+                <input type="hidden" name="action" value="record_scanner">
+                {% if "Record Scanner" in owned_items %}
+                <button type="button" disabled>✅ Scanner Active</button>
+                {% else %}
+                <button type="submit" {% if user.credits < record_scanner_cost %}disabled{% endif %}>🔎 Buy Record Scanner</button>
+                {% endif %}
+            </form>
+        </div>
+
+        <div class="panel">
+            <h2>Inventory</h2>
+            <p>Equip profile effects and view your active boosts.</p>
+            <a href="/inventory"><button type="button">🎒 Open Inventory</button></a>
+            <a href="/elite-wheel"><button type="button">🎡 Open Elite Wheel</button></a>
+        </div>
+
+    </div>
+
+    <br>
+    <a href="/dashboard"><button type="button">👻 Back To Dashboard</button></a>
+</div>
+
+<script src="/static/matrix.js"></script>
+</body>
+</html>

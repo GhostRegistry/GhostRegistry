@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Ghost Profile</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="top-bar">
+    <div><b>👻 {{ user.username }}</b> | {{ user.role }}</div>
+    <div>{{ credit_name }}: <b>{{ user.credits }}</b> | Rank: <b>{{ user.rank }}</b> | Social Code: <b>{{ user.social_code }}</b></div>
+</div>
+
+<div class="page compact-page">
+    <h1>My Ghost Profile</h1>
+    {% if warning %}<p class="message danger-message">{{ warning }}</p>{% endif %}
+    {% if message %}<p class="message">{{ message }}</p>{% endif %}
+
+    <div class="profile-hero panel {{ user.profile_effect|default('')|replace(' ', '-')|lower }}" {% if user.banner_url %}style="background-image:linear-gradient(rgba(0,0,0,.62),rgba(0,0,0,.82)),url('{{ user.banner_url }}');background-size:cover;background-position:center;"{% endif %}>
+        <div class="avatar-wrap profile-avatar">
+            {% if user.avatar_url %}<img src="{{ user.avatar_url }}" onerror="this.style.display='none';this.parentElement.classList.add('avatar-failed');" alt="Profile picture">{% else %}<span>👻</span>{% endif %}
+        </div>
+        <h2>{{ user.username }}</h2>
+        <p class="status-line">{{ user.role }} • {{ rank }}</p>
+        <p><b>{{ credit_name }}:</b> {{ user.credits }}</p>
+        <p><b>Social Code:</b> {{ user.social_code }}</p>
+        <p><b>Records Unlocked:</b> {{ unlocks }}</p>
+        {% if user.bio %}<p class="profile-bio">{{ user.bio }}</p>{% endif %}
+        {% if user.created_at %}<p><b>Joined:</b> {{ user.created_at }}</p>{% endif %}
+        {% if user.profile_effect %}<p><b>Equipped Effect:</b> {{ user.profile_effect }}</p>{% endif %}
+    </div>
+
+    <div class="guide-grid">
+        <div class="panel guide-card">
+            <h2>Profile Picture</h2>
+            <p>Upload a local image from your device. For Render, uploaded images may reset after redeploy, so use the SQL upgrade file and Supabase Storage later if you want permanent cloud avatars.</p>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="upload_avatar">
+                <input type="file" name="avatar" accept="image/png,image/jpeg,image/gif,image/webp">
+                <button type="submit">Upload Profile Picture</button>
+            </form>
+            <form method="POST">
+                <input type="hidden" name="action" value="remove_avatar">
+                <button type="submit">Remove Profile Picture</button>
+            </form>
+        </div>
+        <div class="panel guide-card">
+            <h2>Banner + Bio</h2>
+            <p>Add a profile banner and a short About Me section.</p>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="upload_banner">
+                <input type="file" name="banner" accept="image/png,image/jpeg,image/gif,image/webp">
+                <button type="submit">Upload Banner</button>
+            </form>
+            <form method="POST">
+                <input type="hidden" name="action" value="save_bio">
+                <textarea name="bio" maxlength="280" placeholder="About me / ghost status">{{ user.bio or '' }}</textarea>
+                <button type="submit">Save Bio</button>
+            </form>
+        </div>
+        <div class="panel guide-card">
+            <h2>Reputation</h2>
+            <p>Your profile rank grows as your Ghost Shard balance grows.</p>
+            <p>Equip profile effects from your Inventory after buying them in the shop.</p>
+            <a href="/inventory"><button type="button">Open Inventory</button></a>
+        </div>
+    </div>
+
+    <br><a href="/dashboard"><button type="button">Back To Dashboard</button></a>
+</div>
+<script src="/static/matrix.js"></script>
+</body>
+</html>
